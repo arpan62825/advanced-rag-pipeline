@@ -4,17 +4,33 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const pc = new Pinecone({
-  apiKey: process.env.PINECONE_API_KEY,
-});
+let openaiClient = null;
+const getOpenAIClient = () => {
+  if (!openaiClient) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error("OPENAI_API_KEY environment variable is missing.");
+    }
+    openaiClient = new OpenAI({ apiKey });
+  }
+  return openaiClient;
+};
 
-const index = pc.Index("advanced-rag-pipeline").namespace("subtitles_vectors");
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let pineconeIndex = null;
+const getPineconeIndex = () => {
+  if (!pineconeIndex) {
+    const apiKey = process.env.PINECONE_API_KEY;
+    if (!apiKey) {
+      throw new Error("PINECONE_API_KEY environment variable is missing.");
+    }
+    const pc = new Pinecone({ apiKey });
+    pineconeIndex = pc.Index("advanced-rag-pipeline").namespace("subtitles_vectors");
+  }
+  return pineconeIndex;
+};
 
 const callOpenAI = async (messages, parseJson = false) => {
+  const openai = getOpenAIClient();
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: messages,
@@ -92,6 +108,7 @@ const formatTimestamp = (ms) => {
 };
 
 const retrieveContext = async (queries) => {
+  const index = getPineconeIndex();
   let allHits = [];
   for (const q of queries) {
     const searchResponse = await index.searchRecords({

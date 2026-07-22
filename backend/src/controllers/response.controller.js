@@ -1,33 +1,21 @@
-import OpenAI from "openai";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { answerQuery } from "../utils/answerQuery.js";
 
 export const generateResponse = async (req, res) => {
-  const { prompt } = req.body;
-  try {
-    const response = await client.responses.create({
-      model: "gpt-4o-mini",
-      input: [
-        {
-          role: "system",
-          content: "You are a helpful assistant.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-    });
+  const { query } = req.body;
 
-    res.status(200).json({ data: response.output_text });
-  } catch (error) {
-    console.error("Error generating response:", error);
+  if (!query) {
+    return res
+      .status(400)
+      .json({ error: "Query is required in the request body." });
   }
 
-  console.log(response.output_text);
+  try {
+    const result = await answerQuery(query);
+    res.status(200).json({ result });
+  } catch (error) {
+    console.error("Error generating response:", error);
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
+  }
 };

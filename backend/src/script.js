@@ -16,6 +16,10 @@ app.use(
 );
 app.options("*", cors());
 
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Advanced RAG Pipeline API is running!" });
+});
+
 app.use("/api", responseRoute);
 app.use("/", responseRoute);
 

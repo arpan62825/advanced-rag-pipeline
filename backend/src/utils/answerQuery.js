@@ -147,6 +147,36 @@ const generateAnswer = async (query, context) => {
   return await callOpenAI(messages, false);
 };
 
+const checkRelevance = async (query, context) => {
+  const messages = [
+    {
+      role: "system",
+      content:
+        'You are a relevance checker. Determine whether the retrieved context is semantically related to the user\'s query. The context comes from video subtitles. If the context has NO meaningful relation to the query, mark it as irrelevant. Reply in JSON format: {"relevant": boolean, "reason": "string"}',
+    },
+    {
+      role: "user",
+      content: `Query: ${query}\n\nRetrieved Context:\n${context}`,
+    },
+  ];
+  return await callOpenAI(messages, true);
+};
+
+const generateAnswerFromGeneralKnowledge = async (query) => {
+  const messages = [
+    {
+      role: "system",
+      content:
+        "You are a helpful assistant. The user asked a question that is not covered in the retrieved video context. Provide a comprehensive, accurate, and detailed answer to the user's question using your general knowledge. At the end of your response, add a short, clear note stating that the provided video context does not contain specific information about this topic, so your answer is based on general knowledge.",
+    },
+    {
+      role: "user",
+      content: query,
+    },
+  ];
+  return await callOpenAI(messages, false);
+};
+
 const evaluateAnswer = async (query, context, answer) => {
   const messages = [
     {
@@ -191,6 +221,18 @@ export const answerQuery = async (queryText) => {
       // Original query, step-back query, plus specific sub-questions
       const queriesToRun = [queryText, stepBackQuery, ...subQuestions];
       const context = await retrieveContext(queriesToRun);
+
+      // On first attempt, check if the context is relevant to the query
+      if (attempt === 1) {
+        console.log("Checking relevance...");
+        const relevance = await checkRelevance(queryText, context);
+        if (relevance.relevant === false) {
+          console.log(
+            "Context is not relevant. Answering using general knowledge..."
+          );
+          return await generateAnswerFromGeneralKnowledge(queryText);
+        }
+      }
 
       console.log("Generating answer...");
       const answer = await generateAnswer(queryText, context);

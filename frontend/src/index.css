@@ -1,1 +1,113 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --color-cream-50: #faf8f5;
+  --color-cream-100: #f5f0eb;
+  --color-cream-200: #ebe5dc;
+  --color-cream-300: #ddd4c8;
+  --color-cream-400: #c4b8a8;
+  --color-cream-500: #a89888;
+  --color-cream-600: #8a7a6a;
+  --color-cream-700: #6b5d4f;
+  --color-cream-800: #4d4238;
+  --color-cream-900: #2e2722;
+  --color-warm-50: #fdfcfa;
+  --color-warm-100: #f9f6f1;
+  --color-warm-200: #f0ebe3;
+  --color-warm-300: #e5ddd2;
+  --color-warm-400: #d6cbbf;
+  --color-warm-500: #b8a99a;
+  --color-warm-600: #9a8b7a;
+  --color-warm-700: #7c6d5c;
+  --color-warm-800: #5e4f3e;
+  --color-warm-900: #403020;
+  --color-ink: #1a1714;
+  --color-ink-light: #3d3630;
+  --color-ink-muted: #7a7068;
+}
+
+@layer base {
+  body {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-cream-300);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-cream-400);
+  }
+}
+
+/* Markdown rendering inside messages */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+  font-weight: 600;
+  margin-top: 0.75em;
+  margin-bottom: 0.25em;
+}
+.markdown-content h1 { font-size: 1.25rem; }
+.markdown-content h2 { font-size: 1.125rem; }
+.markdown-content h3 { font-size: 1rem; }
+
+.markdown-content p {
+  margin-bottom: 0.5em;
+  line-height: 1.65;
+}
+.markdown-content p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.25em;
+  margin-bottom: 0.5em;
+}
+.markdown-content li {
+  margin-bottom: 0.2em;
+  line-height: 1.6;
+}
+
+.markdown-content code {
+  font-size: 0.85em;
+  background: var(--color-cream-200);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+
+.markdown-content pre {
+  background: var(--color-cream-800);
+  color: var(--color-cream-100);
+  padding: 0.75em 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 0.5em;
+}
+.markdown-content pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.markdown-content strong {
+  font-weight: 600;
+}
+
+.markdown-content blockquote {
+  border-left: 3px solid var(--color-cream-300);
+  padding-left: 0.75em;
+  margin-left: 0;
+  color: var(--color-ink-muted);
+}
